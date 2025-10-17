@@ -8,5 +8,6 @@ Para cada atividade recomendado instalar as dependências:
 
 ```bash
 npm install
+```
 
 ## --- 👩‍💻Amanda Teodoro Cunha
