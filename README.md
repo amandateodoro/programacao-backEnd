@@ -2,4 +2,4 @@
 
 Este repositório contém todas as atividades desenvolvidas para a matéria **Programação Back-End Avançada** do curso de **Análise e Desenvolvimento de Sistemas**.
 
-## --- 👩‍💻
+## --- 👩‍💻Amanda Teodoro Cunha
