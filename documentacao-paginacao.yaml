@@ -1,0 +1,136 @@
+openapi: 3.0
+
+paths:
+  /usuarios/{userId}/livros-lidos:
+    get:
+      summary: Lista de livros marcados como "lidos" por um usuário
+      parameters:
+        - name: userId
+          in: path
+          required: true
+          schema:
+            type: integer
+
+        - name: limit
+          in: query
+          required: false
+          schema:
+            type: integer
+            minimum: 1
+            maximum: 50
+            default: 20
+
+        - name: after
+          in: query
+          required: false
+          schema:
+            type: string
+
+      responses:
+        '200':
+          description: Resposta de sucesso com o corpo paginado.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Response"
+              examples:
+                exemploSucesso:
+                  summary: Exemplo de resposta paginada
+                  value:
+                    data:
+                      - id: "1"
+                        dataLeitura: "2025-10-30T15:20:45Z"
+                        livro:
+                          id: "1"
+                          titulo: "1984"
+                          autor: "George Orwell"
+                      - id: "2"
+                        dataLeitura: "2025-10-29T09:10:00Z"
+                        livro:
+                          id: "2"
+                          titulo: "O Pequeno Príncipe"
+                          autor: "Antoine de Saint-Exupéry"
+                    pagination:
+                      hasNextPage: true
+                      nextCursor: "2025-10-29T09:10:00Z"
+
+        "400":
+          description: Parâmetro inválido - `limit` acima de 50 ou valor não numérico.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+              examples:
+                limitInvalido:
+                  summary: Valor de limit acima do máximo permitido
+                  value:
+                    error: "O parâmetro 'limit' deve ser um número entre 1 e 50."
+
+        "404":
+          description: Usuário não encontrado.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+              examples:
+                usuarioNaoEncontrado:
+                  summary: Usuário inexistente
+                  value:
+                    error: "Usuário com ID 11839 não encontrado."
+
+components:
+  schemas:
+    Livro:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        titulo:
+          type: string
+        autor:
+          type: string
+
+    LivroLido:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+          description: ID do registro da leitura.
+        dataLeitura:
+          type: string
+          format: date-time
+          description: Data e hora em que o livro foi marcado como lido.
+        livro:
+          $ref: "#/components/schemas/Livro"
+
+
+
+    Pagination:
+      type: object
+      properties:
+        hasNextPage:
+          type: boolean
+          description: Indica se existe uma próxima página.
+        nextCursor:
+          type: string
+          nullable: true
+          description: Cursor da última leitura da página atual.
+
+    Response:
+      type: object
+      properties:
+        data:
+          type: array
+          items:
+            $ref: '#/components/schemas/LivroLido'
+        pagination:
+          $ref: '#/components/schemas/Pagination'
+
+    ErrorResponse:
+      type: object
+      properties:
+        error:
+          type: string
+          example: "Mensagem de erro."
